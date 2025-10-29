@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "corsheaders",
 ]
 
+
 CORS_ORIGIN_ALLOW_ALL = True
 
 MIDDLEWARE = [

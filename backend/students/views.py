@@ -1,53 +1,86 @@
 from rest_framework.views import APIView
-from .serializers import StudentSerializer
-from django.http.response import JsonResponse
-from .models import Student
-from django.http.response import Http404
 from rest_framework.response import Response
-
+from django.http.response import JsonResponse
+from django.http import Http404
+from .serializers import StudentSerializer, CourseSerializer
+from .models import Student, Course
 
 class StudentView(APIView):
-
     def get_student(self, pk):
         try:
-            student = Student.objects.get(studentId=pk)
-            return student
-        except:
-            return JsonResponse("Student Does Not Exist", safe=False)
+            return Student.objects.get(studentId=pk)
+        except Student.DoesNotExist:
+            raise Http404
 
     def get(self, request, pk=None):
         if pk:
-            data = self.get_student(pk)
-            serializer = StudentSerializer(data)
+            student = self.get_student(pk)
+            serializer = StudentSerializer(student)
         else:
-            data = Student.objects.all()
-            serializer = StudentSerializer(data, many=True)
+            students = Student.objects.all()
+            serializer = StudentSerializer(students, many=True)
         return Response(serializer.data)
 
     def post(self, request):
-        data = request.data
-        serializer = StudentSerializer(data=data)
-
+        serializer = StudentSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            student = serializer.save()
+
+            # automatically create course if it doesn't exist
+            course_name = student.Course
+            if course_name:
+                Course.objects.get_or_create(courseName=course_name)
+
             return JsonResponse("Student Created Successfully", safe=False)
+        print(serializer.errors)
         return JsonResponse("Failed to Add Student", safe=False)
 
     def put(self, request, pk=None):
-        student_to_update = Student.objects.get(studentId=pk)
-        serializer = StudentSerializer(instance=student_to_update, data=request.data, partial=True)
-
+        student = self.get_student(pk)
+        serializer = StudentSerializer(student, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse("Student Updated Successfully", safe=False)
-        return JsonResponse("Failed to Update Student")
+        return JsonResponse("Failed to Update Student", safe=False)
 
     def delete(self, request, pk=None):
-        student_to_delete = Student.objects.get(studentId=pk)
-        student_to_delete.delete()
+        student = self.get_student(pk)
+        student.delete()
         return JsonResponse("Student Deleted Successfully", safe=False)
 
 
+class CourseView(APIView):
+    def get_course(self, pk):
+        try:
+            return Course.objects.get(courseId=pk)
+        except Course.DoesNotExist:
+            raise Http404
 
+    def get(self, request, pk=None):
+        if pk:
+            course = self.get_course(pk)
+            serializer = CourseSerializer(course)
+        else:
+            courses = Course.objects.all()
+            serializer = CourseSerializer(courses, many=True)
+        return Response(serializer.data)
 
+    def post(self, request):
+        serializer = CourseSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse("Course Created Successfully", safe=False)
+        return JsonResponse("Failed to Add Course", safe=False)
 
+    def put(self, request, pk=None):
+        course = self.get_course(pk)
+        serializer = CourseSerializer(course, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse("Course Updated Successfully", safe=False)
+        return JsonResponse("Failed to Update Course", safe=False)
+
+    def delete(self, request, pk=None):
+        course = self.get_course(pk)
+        course.delete()
+        return JsonResponse("Course Deleted Successfully", safe=False)

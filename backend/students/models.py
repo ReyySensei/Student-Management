@@ -1,6 +1,11 @@
 from django.db import models
 
-# Create your models here.
+class Course(models.Model):
+    courseId = models.AutoField(primary_key=True)
+    courseName = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.courseName
 
 
 class Student(models.Model):
@@ -9,4 +14,7 @@ class Student(models.Model):
     LastName = models.CharField(max_length=100)
     RegistrationNo = models.CharField(max_length=100)
     Email = models.CharField(max_length=100)
-    Course = models.CharField(max_length=100)
+    Course = models.CharField(max_length=100, null=True, blank=True)  # keep as text
+
+    def __str__(self):
+        return f"{self.FirstName} {self.LastName}"

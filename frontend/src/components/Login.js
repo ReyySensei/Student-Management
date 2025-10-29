@@ -10,10 +10,8 @@ const Login = ({ onLogin }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // Call onLogin from the parent (App.js) to set authentication state
         onLogin(email, password);
 
-        // If credentials are correct, navigate to the home page
         if (email === "admin@gmail.com" && password === "admin123") {
             navigate("/home");
         } else {
