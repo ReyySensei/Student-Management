@@ -2,20 +2,38 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import holycross from "../images/holycross.png";
 
-const Login = ({ onLogin }) => {
+const Login = ({ onLoginSuccess }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
 
-        onLogin(email, password);
+        try {
+            const response = await fetch("http://127.0.0.1:8000/api/admin/login/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+            });
 
-        if (email === "admin@gmail.com" && password === "admin123") {
-            navigate("/home");
-        } else {
-            alert("Invalid email or password. Please try again.");
+            const data = await response.json();
+            console.log("Login response:", data);
+
+            if (response.ok) {
+                alert(data.message || "Login successful");
+                onLoginSuccess(data.adminId); 
+                navigate("/home");
+            } else {
+                alert(data.error || "Invalid email or password");
+            }
+        } catch (error) {
+            console.error("Login fetch error:", error);
+            alert("Server error. Please try again later.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -41,7 +59,9 @@ const Login = ({ onLogin }) => {
                         required
                         style={styles.input}
                     />
-                    <button type="submit" style={styles.button}>Log In</button>
+                    <button type="submit" style={styles.button} disabled={loading}>
+                        {loading ? "Logging in..." : "Log In"}
+                    </button>
                 </form>
             </div>
         </div>

@@ -2,8 +2,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http.response import JsonResponse
 from django.http import Http404
-from .serializers import StudentSerializer, CourseSerializer
-from .models import Student, Course
+from .serializers import StudentSerializer, CourseSerializer, AdminAccountSerializer
+from .models import Student, Course, AdminAccount
 
 class StudentView(APIView):
     def get_student(self, pk):
@@ -84,3 +84,15 @@ class CourseView(APIView):
         course = self.get_course(pk)
         course.delete()
         return JsonResponse("Course Deleted Successfully", safe=False)
+
+
+class AdminLoginView(APIView):
+    def post(self, request):
+        email = request.data.get("email")
+        password = request.data.get("password")
+
+        try:
+            admin = AdminAccount.objects.get(email=email, password=password)  
+            return JsonResponse({"message": "Login successful", "adminId": admin.adminId}, safe=False)
+        except AdminAccount.DoesNotExist:
+            return JsonResponse({"error": "Invalid email or password"}, status=401)

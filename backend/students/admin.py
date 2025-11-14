@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Student, Course
+from .models import Student, Course, AdminAccount
 
 class StudentAdmin(admin.ModelAdmin):
     list_display = ("RegistrationNo", "FirstName", "LastName", "Course")
@@ -25,5 +25,10 @@ class CourseAdmin(admin.ModelAdmin):
 
     enrolled_students.short_description = "Registered Students"
 
+class AdminAccountAdmin(admin.ModelAdmin):
+    list_display = ("email",)
+    search_fields = ("email",)
+
 admin.site.register(Student, StudentAdmin)
 admin.site.register(Course, CourseAdmin)
+admin.site.register(AdminAccount)

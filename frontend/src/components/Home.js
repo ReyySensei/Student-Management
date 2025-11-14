@@ -1,7 +1,6 @@
 import hcdcschool from '../images/hcdcschool.png'
 import hcdcschool2 from '../images/hcdcschool2.png'
 import hcdcschool3 from '../images/hcdcschool3.png'
-
 import Carousel from 'react-bootstrap/Carousel';
 
 const Home = () => {

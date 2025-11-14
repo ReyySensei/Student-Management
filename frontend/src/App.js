@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Navigation from './components/Navigation';
@@ -10,65 +10,46 @@ import Login from './components/Login';
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Handle login function, which will set the authentication state to true
-  const handleLogin = (email, password) => {
-    if (email === "admin@gmail.com" && password === "admin123") {
-      setIsAuthenticated(true); // Set authenticated status to true
-    } else {
-      alert("Invalid credentials");
-    }
+  const handleLoginSuccess = (adminId) => {
+    localStorage.setItem("adminId", adminId); 
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("adminId");
+    setIsAuthenticated(false);
   };
 
   return (
     <BrowserRouter>
-      
-      {isAuthenticated && <Navigation />}
+      {isAuthenticated && <Navigation onLogout={handleLogout} />}
       <Routes>
-       
         <Route
           path="/"
           element={
             isAuthenticated ? (
               <Navigate to="/home" replace />
             ) : (
-              <Login onLogin={handleLogin} />
+              <Login onLoginSuccess={handleLoginSuccess} />
             )
           }
         />
-
-      
         <Route
           path="/home"
           element={
-            isAuthenticated ? (
-              <Home />
-            ) : (
-              <Navigate to="/" replace />
-            )
+            isAuthenticated ? <Home /> : <Navigate to="/" replace />
           }
         />
-
-        
         <Route
           path="/students"
           element={
-            isAuthenticated ? (
-              <Students />
-            ) : (
-              <Navigate to="/" replace />
-            )
+            isAuthenticated ? <Students /> : <Navigate to="/" replace />
           }
         />
-
-        
         <Route
           path="/manage"
           element={
-            isAuthenticated ? (
-              <Manage />
-            ) : (
-              <Navigate to="/" replace />
-            )
+            isAuthenticated ? <Manage /> : <Navigate to="/" replace />
           }
         />
       </Routes>

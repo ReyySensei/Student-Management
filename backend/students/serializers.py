@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Student, Course
+from .models import AdminAccount 
 
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,7 +16,6 @@ class StudentSerializer(serializers.ModelSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
-    # show registration numbers of students enrolled in this course
     students = serializers.SerializerMethodField()
 
     class Meta:
@@ -24,3 +24,9 @@ class CourseSerializer(serializers.ModelSerializer):
 
     def get_students(self, obj):
         return list(Student.objects.filter(Course=obj.courseName).values_list("RegistrationNo", flat=True))
+
+
+class AdminAccountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AdminAccount  
+        fields = ("adminId", "email", "password")
