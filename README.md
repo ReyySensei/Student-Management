@@ -1,1 +1,2 @@
-birada jud
+eh clone lng ayaw kaulaw
+
