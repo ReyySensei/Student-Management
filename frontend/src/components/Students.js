@@ -6,33 +6,48 @@ import "../App.css";
 const Students = () => {
   const [students, setStudents] = useState([]);
   const [filteredStudents, setFilteredStudents] = useState([]);
-  const [searchQuery, setSearchQuery] = useState(""); // Search query state
+  const [searchRegistration, setSearchRegistration] = useState("");
+  const [searchCourse, setSearchCourse] = useState("");
 
   useEffect(() => {
     let mounted = true;
-    getStudents()
-      .then(data => {
-        if (mounted) {
-          setStudents(data);
-          setFilteredStudents(data); // Initially display all students
-        }
-      })
-    return () => mounted = false;
+    getStudents().then(data => {
+      if (mounted) {
+        setStudents(data);
+        setFilteredStudents(data);
+      }
+    });
+    return () => (mounted = false);
   }, []);
 
-  const handleSearchChange = (e) => {
-    const query = e.target.value;
-    setSearchQuery(query);
+  const filterStudents = (regQuery, courseQuery) => {
+    let filtered = students;
 
-    // Filter students based on registration number
-    if (query) {
-      const filtered = students.filter(student =>
-        student.RegistrationNo.toLowerCase().includes(query.toLowerCase())
+    if (regQuery) {
+      filtered = filtered.filter(student =>
+        student.RegistrationNo.toLowerCase().includes(regQuery.toLowerCase())
       );
-      setFilteredStudents(filtered);
-    } else {
-      setFilteredStudents(students); // Reset filter when search is cleared
     }
+
+    if (courseQuery) {
+      filtered = filtered.filter(student =>
+        student.Course.toLowerCase().includes(courseQuery.toLowerCase())
+      );
+    }
+
+    setFilteredStudents(filtered);
+  };
+
+  const handleRegistrationSearch = (e) => {
+    const value = e.target.value;
+    setSearchRegistration(value);
+    filterStudents(value, searchCourse);
+  };
+
+  const handleCourseSearch = (e) => {
+    const value = e.target.value;
+    setSearchCourse(value);
+    filterStudents(searchRegistration, value);
   };
 
   return (
@@ -40,14 +55,27 @@ const Students = () => {
       <div className="row side-row">
         <p id="before-table"></p>
 
-        {/* Search Bar */}
-        <div className="mb-3">
+        {/* Search Bars Side by Side */}
+        <div className="d-flex mb-3" style={{ gap: "10px" }}>
+
+          {/* Search by Registration No */}
           <input
             type="text"
             className="form-control"
             placeholder="Search by Registration No"
-            value={searchQuery}
-            onChange={handleSearchChange}
+            value={searchRegistration}
+            onChange={handleRegistrationSearch}
+            style={{ flex: 1 }}
+          />
+
+          {/* Search by Course (Right Side) */}
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Search by Course (ex: BSIT)"
+            value={searchCourse}
+            onChange={handleCourseSearch}
+            style={{ width: "250px" }}
           />
         </div>
 
@@ -63,7 +91,7 @@ const Students = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredStudents.map((stu) =>
+            {filteredStudents.map(stu =>
               <tr key={stu.id}>
                 <td>{stu.studentId}</td>
                 <td>{stu.FirstName}</td>
@@ -71,7 +99,8 @@ const Students = () => {
                 <td>{stu.RegistrationNo}</td>
                 <td>{stu.Email}</td>
                 <td>{stu.Course}</td>
-              </tr>)}
+              </tr>
+            )}
           </tbody>
         </Table>
       </div>
