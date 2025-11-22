@@ -10,7 +10,8 @@ import { getStudents, deleteStudent } from '../services/StudentService';
 const Manage = () => {
   const [students, setStudents] = useState([]);
   const [filteredStudents, setFilteredStudents] = useState([]);
-  const [searchQuery, setSearchQuery] = useState(""); // Search query state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [courseQuery, setCourseQuery] = useState(""); // NEW STATE
   const [addModalShow, setAddModalShow] = useState(false);
   const [editModalShow, setEditModalShow] = useState(false);
   const [editStudent, setEditStudent] = useState([]);
@@ -25,7 +26,7 @@ const Manage = () => {
       .then(data => {
         if (mounted) {
           setStudents(data);
-          setFilteredStudents(data); // Initially display all students
+          setFilteredStudents(data);
         }
       })
     return () => {
@@ -59,19 +60,35 @@ const Manage = () => {
     }
   };
 
+  // UPDATED SEARCH FUNCTION – supports both Registration No & Course
+  const filterStudents = (regQuery, courseQuery) => {
+    let filtered = students;
+
+    if (regQuery) {
+      filtered = filtered.filter(student =>
+        student.RegistrationNo.toLowerCase().includes(regQuery.toLowerCase())
+      );
+    }
+
+    if (courseQuery) {
+      filtered = filtered.filter(student =>
+        student.Course.toLowerCase().includes(courseQuery.toLowerCase())
+      );
+    }
+
+    setFilteredStudents(filtered);
+  };
+
   const handleSearchChange = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
+    filterStudents(query, courseQuery);
+  };
 
-    // Filter students based on registration number
-    if (query) {
-      const filtered = students.filter(student =>
-        student.RegistrationNo.toLowerCase().includes(query.toLowerCase())
-      );
-      setFilteredStudents(filtered);
-    } else {
-      setFilteredStudents(students); // Reset filter when search is cleared
-    }
+  const handleCourseChange = (e) => {
+    const query = e.target.value;
+    setCourseQuery(query);
+    filterStudents(searchQuery, query);
   };
 
   let AddModelClose = () => setAddModalShow(false);
@@ -79,11 +96,11 @@ const Manage = () => {
 
   return (
     <div className="container-fluid side-container">
-      <div className="row side-row" >
+      <div className="row side-row">
         <p id="manage"></p>
 
-        {/* Search Bar */}
-        <div className="mb-3">
+        {/* TWO SEARCH BARS SIDE BY SIDE */}
+        <div className="mb-3 d-flex" style={{ gap: "10px" }}>
           <input
             type="text"
             className="form-control"
@@ -91,12 +108,20 @@ const Manage = () => {
             value={searchQuery}
             onChange={handleSearchChange}
           />
+
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Search by Course"
+            value={courseQuery}
+            onChange={handleCourseChange}
+          />
         </div>
 
         <Table striped bordered hover className="react-bootstrap-table" id="dataTable">
           <thead>
             <tr>
-              <th >ID</th>
+              <th>ID</th>
               <th>First Name</th>
               <th>Last Name</th>
               <th>Registration No</th>
@@ -131,6 +156,7 @@ const Manage = () => {
             )}
           </tbody>
         </Table>
+
         <ButtonToolbar>
           <Button variant="primary" onClick={handleAdd}>
             Add Student
