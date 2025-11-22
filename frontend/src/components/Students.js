@@ -55,10 +55,8 @@ const Students = () => {
       <div className="row side-row">
         <p id="before-table"></p>
 
-        {/* Search Bars Side by Side */}
         <div className="d-flex mb-3" style={{ gap: "10px" }}>
 
-          {/* Search by Registration No */}
           <input
             type="text"
             className="form-control"
@@ -68,7 +66,6 @@ const Students = () => {
             style={{ flex: 1 }}
           />
 
-          {/* Search by Course (Right Side) */}
           <input
             type="text"
             className="form-control"

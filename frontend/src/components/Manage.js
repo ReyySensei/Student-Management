@@ -99,7 +99,6 @@ const Manage = () => {
       <div className="row side-row">
         <p id="manage"></p>
 
-        {/* TWO SEARCH BARS SIDE BY SIDE */}
         <div className="mb-3 d-flex" style={{ gap: "10px" }}>
           <input
             type="text"
