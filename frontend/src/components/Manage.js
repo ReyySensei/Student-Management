@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Table } from 'react-bootstrap';
-import { Button, ButtonToolbar } from 'react-bootstrap';
+import { Table, Button, ButtonToolbar } from 'react-bootstrap';
 import { FaEdit } from 'react-icons/fa';
 import { RiDeleteBin5Line } from 'react-icons/ri';
 import AddStudentModal from "./AddStudentModal";
 import UpdateStudentModal from "./UpdateStudentModal";
 import { getStudents, deleteStudent } from '../services/StudentService';
+import "../App.css";
 
 const Manage = () => {
   const [students, setStudents] = useState([]);
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [courseQuery, setCourseQuery] = useState(""); // NEW STATE
+  const [courseQuery, setCourseQuery] = useState("");
   const [addModalShow, setAddModalShow] = useState(false);
   const [editModalShow, setEditModalShow] = useState(false);
   const [editStudent, setEditStudent] = useState([]);
@@ -19,20 +19,20 @@ const Manage = () => {
 
   useEffect(() => {
     let mounted = true;
-    if (students.length && !isUpdated) {
-      return;
-    }
-    getStudents()
-      .then(data => {
-        if (mounted) {
-          setStudents(data);
-          setFilteredStudents(data);
-        }
-      })
+    if (students.length && !isUpdated) return;
+
+    getStudents().then(data => {
+      if (mounted) {
+        const sortedData = data.sort((a, b) => a.LastName.localeCompare(b.LastName));
+        setStudents(sortedData);
+        setFilteredStudents(sortedData);
+      }
+    });
+
     return () => {
       mounted = false;
       setIsUpdated(false);
-    }
+    };
   }, [isUpdated, students]);
 
   const handleUpdate = (e, stu) => {
@@ -47,26 +47,26 @@ const Manage = () => {
   };
 
   const handleDelete = (e, studentId) => {
-    if (window.confirm('Are you sure ?')) {
+    if (window.confirm('Are you sure?')) {
       e.preventDefault();
       deleteStudent(studentId)
-        .then((result) => {
+        .then(result => {
           alert(result);
           setIsUpdated(true);
-        },
-          (error) => {
-            alert("Failed to Delete Student");
-          })
+        }, error => {
+          alert("Failed to Delete Student");
+        });
     }
   };
 
-  // UPDATED SEARCH FUNCTION – supports both Registration No & Course
   const filterStudents = (regQuery, courseQuery) => {
     let filtered = students;
 
     if (regQuery) {
+      const q = regQuery.toLowerCase();
       filtered = filtered.filter(student =>
-        student.RegistrationNo.toLowerCase().includes(regQuery.toLowerCase())
+        student.IDNo.toLowerCase().includes(q) ||
+        student.LastName.toLowerCase().includes(q)
       );
     }
 
@@ -96,72 +96,71 @@ const Manage = () => {
 
   return (
     <div className="container-fluid side-container">
-      <div className="row side-row">
-        <p id="manage"></p>
-
-        <div className="mb-3 d-flex" style={{ gap: "10px" }}>
+      <div className="row side-row manage-responsive">
+        <div className="d-flex flex-wrap mb-3 search-inputs">
           <input
             type="text"
             className="form-control"
-            placeholder="Search by Registration No"
+            placeholder="Search by ID No or Last Name"
             value={searchQuery}
             onChange={handleSearchChange}
+            style={{ flex: '1 1 150px' }}
           />
-
           <input
             type="text"
             className="form-control"
             placeholder="Search by Course"
             value={courseQuery}
             onChange={handleCourseChange}
+            style={{ flex: '1 1 150px', maxWidth: '200px' }}
           />
         </div>
 
-        <Table striped bordered hover className="react-bootstrap-table" id="dataTable">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Registration No</th>
-              <th>Email</th>
-              <th>Course</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredStudents.map((stu) =>
-              <tr key={stu.id}>
-                <td>{stu.studentId}</td>
-                <td>{stu.FirstName}</td>
-                <td>{stu.LastName}</td>
-                <td>{stu.RegistrationNo}</td>
-                <td>{stu.Email}</td>
-                <td>{stu.Course}</td>
-                <td>
-                  <Button className="mr-2" variant="danger"
-                    onClick={event => handleDelete(event, stu.studentId)}>
-                    <RiDeleteBin5Line />
-                  </Button>
-                  <span>&nbsp;&nbsp;&nbsp;</span>
-                  <Button className="mr-2"
-                    onClick={event => handleUpdate(event, stu)}>
-                    <FaEdit />
-                  </Button>
-                  <UpdateStudentModal show={editModalShow} student={editStudent} setUpdated={setIsUpdated}
-                    onHide={EditModelClose}></UpdateStudentModal>
-                </td>
+        <div className="table-responsive">
+          <Table striped bordered hover className="react-bootstrap-table" id="dataTable">
+            <thead>
+              <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>ID No</th>
+                <th>Email</th>
+                <th>Course</th>
+                <th>Action</th>
               </tr>
-            )}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {filteredStudents.map(stu =>
+                <tr key={stu.id}>
+                  <td>{stu.FirstName}</td>
+                  <td>{stu.LastName}</td>
+                  <td>{stu.IDNo}</td>
+                  <td>{stu.Email}</td>
+                  <td>{stu.Course}</td>
+                  <td className="d-flex gap-1 flex-wrap">
+                    <Button variant="danger" onClick={e => handleDelete(e, stu.studentId)}>
+                      <RiDeleteBin5Line />
+                    </Button>
+                    <Button onClick={e => handleUpdate(e, stu)}>
+                      <FaEdit />
+                    </Button>
+                    <UpdateStudentModal
+                      show={editModalShow}
+                      student={editStudent}
+                      setUpdated={setIsUpdated}
+                      onHide={EditModelClose}
+                    />
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </Table>
+        </div>
 
-        <ButtonToolbar>
+        <ButtonToolbar className="flex-wrap mt-3">
           <Button variant="primary" onClick={handleAdd}>
             Add Student
           </Button>
-          <AddStudentModal show={addModalShow} setUpdated={setIsUpdated}
-            onHide={AddModelClose}></AddStudentModal>
+          <AddStudentModal show={addModalShow} setUpdated={setIsUpdated} onHide={AddModelClose} />
         </ButtonToolbar>
       </div>
     </div>

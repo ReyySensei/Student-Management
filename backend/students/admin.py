@@ -3,8 +3,8 @@ from django.utils.html import format_html
 from .models import Student, Course, AdminAccount
 
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ("RegistrationNo", "FirstName", "LastName", "Course")
-    search_fields = ("RegistrationNo", "FirstName", "LastName")
+    list_display = ("IDNo", "FirstName", "LastName", "Course")
+    search_fields = ("IDNo", "FirstName", "LastName")
 
 class CourseAdmin(admin.ModelAdmin):
     list_display = ("courseName",)
@@ -18,7 +18,7 @@ class CourseAdmin(admin.ModelAdmin):
 
         # Include RegistrationNo + full name
         lines = [
-            f"{i + 1}. {s.RegistrationNo} — {s.FirstName} {s.LastName}"
+            f"{i + 1}. {s.IDNo} — {s.FirstName} {s.LastName}"
             for i, s in enumerate(students)
         ]
         return format_html("<br>".join(lines))

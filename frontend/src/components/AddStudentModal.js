@@ -44,8 +44,8 @@ const AddStudentModal = (props) => {
                                     <Form.Control type="text" name="LastName" required placeholder="" />
                                 </Form.Group>
                                 <Form.Group controlId="RegistrationNo">
-                                    <Form.Label>Registration No.</Form.Label>
-                                    <Form.Control type="text" name="RegistrationNo" required placeholder="" />
+                                    <Form.Label>ID No.</Form.Label>
+                                    <Form.Control type="text" name="IDNo" required placeholder="" />
                                 </Form.Group>
                                 <Form.Group controlId="Email">
                                     <Form.Label>Email</Form.Label>

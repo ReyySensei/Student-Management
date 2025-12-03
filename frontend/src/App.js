@@ -11,7 +11,7 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const handleLoginSuccess = (adminId) => {
-    localStorage.setItem("adminId", adminId); 
+    localStorage.setItem("adminId", adminId);
     setIsAuthenticated(true);
   };
 

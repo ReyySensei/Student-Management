@@ -24,7 +24,7 @@ const Login = ({ onLoginSuccess }) => {
 
             if (response.ok) {
                 alert(data.message || "Login successful");
-                onLoginSuccess(data.adminId); 
+                onLoginSuccess(data.adminId);
                 navigate("/home");
             } else {
                 alert(data.error || "Invalid email or password");

@@ -21,7 +21,7 @@ export function addStudent(student) {
     studentId: null,
     FirstName: student.FirstName.value,
     LastName: student.LastName.value,
-    RegistrationNo: student.RegistrationNo.value,
+    IDNo: student.IDNo.value,
     Email: student.Email.value,
     Course: student.Course.value
   })
@@ -32,7 +32,7 @@ export function updateStudent(stuid, student) {
   return axios.put('http://127.0.0.1:8000/students/' + stuid + '/', {
     FirstName: student.FirstName.value,
     LastName: student.LastName.value,
-    RegistrationNo: student.RegistrationNo.value,
+    IDNo: student.IDNo.value,
     Email: student.Email.value,
     Course: student.Course.value
   })

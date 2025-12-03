@@ -9,7 +9,7 @@ class StudentSerializer(serializers.ModelSerializer):
             "studentId",
             "FirstName",
             "LastName",
-            "RegistrationNo",
+            "IDNo",
             "Email",
             "Course",
         )
@@ -20,10 +20,10 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ("courseId", "courseName", "students")
+        fields = ("courseId", "Course", "students")
 
     def get_students(self, obj):
-        return list(Student.objects.filter(Course=obj.courseName).values_list("RegistrationNo", flat=True))
+        return list(Student.objects.filter(Course=obj.Course).values_list("IDNo", flat=True))
 
 
 class AdminAccountSerializer(serializers.ModelSerializer):

@@ -3,7 +3,6 @@ import { Modal, Col, Row, Form, Button } from 'react-bootstrap';
 import { FormControl, FormGroup, FormLabel } from 'react-bootstrap';
 import { updateStudent } from '../services/StudentService';
 
-
 const UpdateStudentModal = (props) => {
 
     const handleSubmit = (e) => {
@@ -45,9 +44,9 @@ const UpdateStudentModal = (props) => {
                                     <Form.Label>Last Name</Form.Label>
                                     <Form.Control type="text" name="LastName" required defaultValue={props.student.LastName} placeholder="" />
                                 </Form.Group>
-                                <Form.Group controlId="RegistrationNo">
-                                    <Form.Label>Registration No.</Form.Label>
-                                    <Form.Control type="text" name="RegistrationNo" required defaultValue={props.student.RegistrationNo} placeholder="" />
+                                <Form.Group controlId="IDNo">
+                                    <Form.Label>ID No.</Form.Label>
+                                    <Form.Control type="text" name="IDNo" required defaultValue={props.student.IDNo} placeholder="" />
                                 </Form.Group>
                                 <Form.Group controlId="Email">
                                     <Form.Label>Email</Form.Label>
